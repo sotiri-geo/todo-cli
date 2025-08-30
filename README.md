@@ -73,29 +73,6 @@ todo delete 2
 
 ---
 
-### **📂 Project Structure**
-
-```bash
-todo-cli/
-  ├── main.go
-  ├── cmd/
-  │    ├── add.go
-  │    ├── list.go
-  │    ├── done.go
-  │    ├── delete.go
-  │    ├── add_test.go      # tests for add command
-  │    └── list_test.go     # tests for list command, etc.
-  ├── task/
-  │    ├── task.go
-  │    ├── store.go
-  │    ├── task_test.go     # tests for Task struct behavior
-  │    └── store_test.go    # tests for persistence (JSON read/write)
-  ├── tasks.json
-  ├── go.mod
-```
-
----
-
 ## **✅ Acceptance Criteria**
 
 - Commands work as described.
