@@ -1,0 +1,72 @@
+package storage
+
+import (
+	"errors"
+	"os"
+	"path/filepath"
+	"testing"
+
+	"github.com/sotiri-geo/todo-cli/internal/task"
+)
+
+// We need to tests components that touch the file system
+
+func TestFileStorage_Integration(t *testing.T) {
+	// Create temporary directory for test files
+	tempDir, err := os.MkdirTemp("", "todo-test-*")
+
+	if err != nil {
+		t.Fatalf("Failed to create temp dir: %v", err)
+	}
+
+	defer os.RemoveAll(tempDir)
+
+	t.Run("save and load from actual file", func(t *testing.T) {
+		filename := filepath.Join(tempDir, "tasks.json")
+		store := NewFileStore(filename)
+
+		// Create test data
+		originalList := task.NewTaskList()
+		task1, _ := originalList.AddTask("Buy milk")
+		originalList.AddTask("Buy bread")
+
+		task1.Complete()
+
+		// Save to file
+		err := store.Save(originalList)
+
+		if err != nil {
+			t.Fatalf("Failed to save: %v", err)
+		}
+		// Verify file was persisted
+		if _, err := os.Stat(filename); errors.Is(err, os.ErrNotExist) {
+			t.Fatalf("File does not exist: %v", err)
+		}
+
+		// Reload and check same content as original
+		loadedList, err := store.Load()
+
+		if err != nil {
+			t.Errorf("Load failed: %v", err)
+		}
+
+		// Check loaded content, individually
+
+		if len(originalList.Tasks) != len(loadedList.Tasks) {
+			t.Fatalf("Failed to load tasks: got %v, want %v", len(loadedList.Tasks), len(originalList.Tasks))
+		}
+
+		for i := 0; i < len(originalList.Tasks); i++ {
+			wantTask := *originalList.Tasks[i]
+			gotTask := *loadedList.Tasks[i]
+
+			if gotTask.ID != wantTask.ID {
+				t.Errorf("Task mismatch: got %+v, want %+v", gotTask, wantTask)
+			}
+		}
+
+		if len(loadedList.FindCompleted()) != 1 {
+			t.Errorf("Should have %d completed tasks", 1)
+		}
+	})
+}

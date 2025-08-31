@@ -100,10 +100,9 @@ func TestStorage_EdgeCases(t *testing.T) {
 		},
 		{
 			name: "multiple tasks with different states",
-			setup: func(*task.TaskList) {
-				taskList := task.NewTaskList()
-				taskList.AddTask("Buy milk")
-				task2, _ := taskList.AddTask("Buy cheese")
+			setup: func(tl *task.TaskList) {
+				tl.AddTask("Buy milk")
+				task2, _ := tl.AddTask("Buy cheese")
 
 				task2.Complete()
 			},
@@ -111,11 +110,11 @@ func TestStorage_EdgeCases(t *testing.T) {
 				completed := loaded.FindCompleted()
 
 				if len(completed) != 1 {
-					t.Errorf("Completed tasks: got %d, want %d", len(completed), 1)
+					t.Fatalf("Completed tasks: got %d, want %d", len(completed), 1)
 				}
 
 				// Verify data
-				if completed[0].Description != "Buy milk" {
+				if completed[0].Description != "Buy cheese" {
 					t.Errorf("Wrong task marked as completed: %q", completed[0].Description)
 				}
 
@@ -134,7 +133,6 @@ func TestStorage_EdgeCases(t *testing.T) {
 			tt.setup(taskList) // Setup taskList structure
 
 			err := store.Save(taskList)
-
 			if err != nil {
 				t.Fatalf("Failed save: %v", err)
 			}
