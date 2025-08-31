@@ -56,17 +56,33 @@ func TestFileStorage_Integration(t *testing.T) {
 			t.Fatalf("Failed to load tasks: got %v, want %v", len(loadedList.Tasks), len(originalList.Tasks))
 		}
 
-		for i := 0; i < len(originalList.Tasks); i++ {
-			wantTask := *originalList.Tasks[i]
-			gotTask := *loadedList.Tasks[i]
-
-			if gotTask.ID != wantTask.ID {
-				t.Errorf("Task mismatch: got %+v, want %+v", gotTask, wantTask)
-			}
+		for i, originalTask := range originalList.Tasks {
+			assertTasksEqual(t, originalTask, loadedList.Tasks[i])
 		}
 
 		if len(loadedList.FindCompleted()) != 1 {
 			t.Errorf("Should have %d completed tasks", 1)
 		}
 	})
+}
+
+func assertTasksEqual(t *testing.T, got, want *task.Task) {
+	t.Helper()
+
+	if got.ID != want.ID {
+		t.Errorf("ID mismatch: got %d, want %d", got.ID, want.ID)
+	}
+
+	if got.Description != want.Description {
+		t.Errorf("Description mismatch: got %q, want %q", got.Description, want.Description)
+	}
+
+	if got.Completed != want.Completed {
+		t.Errorf("Completed mismatch: got %t, want %t", got.Completed, want.Completed)
+	}
+
+	// handles monotonic clock differences
+	if !got.CreatedAt.Equal(want.CreatedAt) {
+		t.Errorf("CreatedAt mismatch: got %v, want %v", got.CreatedAt, want.CreatedAt)
+	}
 }
