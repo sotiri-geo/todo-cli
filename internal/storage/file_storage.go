@@ -8,6 +8,8 @@ import (
 	"github.com/sotiri-geo/todo-cli/internal/task"
 )
 
+const FileModePermissions = 0644
+
 type FileStore struct {
 	filename string
 	taskList *task.TaskList
@@ -25,7 +27,7 @@ func (f *FileStore) Save(taskList *task.TaskList) error {
 	}
 
 	// Write to disk
-	err = os.WriteFile(f.filename, b, 0644)
+	err = os.WriteFile(f.filename, b, FileModePermissions)
 
 	if err != nil {
 		return fmt.Errorf("Failed to write file: %v", err)
