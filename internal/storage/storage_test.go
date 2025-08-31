@@ -98,6 +98,32 @@ func TestStorage_EdgeCases(t *testing.T) {
 				}
 			},
 		},
+		{
+			name: "multiple tasks with different states",
+			setup: func(*task.TaskList) {
+				taskList := task.NewTaskList()
+				taskList.AddTask("Buy milk")
+				task2, _ := taskList.AddTask("Buy cheese")
+
+				task2.Complete()
+			},
+			validate: func(t *testing.T, loaded *task.TaskList) {
+				completed := loaded.FindCompleted()
+
+				if len(completed) != 1 {
+					t.Errorf("Completed tasks: got %d, want %d", len(completed), 1)
+				}
+
+				// Verify data
+				if completed[0].Description != "Buy milk" {
+					t.Errorf("Wrong task marked as completed: %q", completed[0].Description)
+				}
+
+				if len(loaded.Tasks) != 2 {
+					t.Errorf("Loaded tasks: got %d, want %d", len(loaded.Tasks), 2)
+				}
+			},
+		},
 	}
 
 	for _, tt := range cases {
