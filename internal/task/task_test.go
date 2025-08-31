@@ -149,4 +149,22 @@ func TestListOfTasks(t *testing.T) {
 			t.Error("task was not marked as complete`")
 		}
 	})
+
+	t.Run("find all completed tasks", func(t *testing.T) {
+		list := NewTaskList()
+
+		list.AddTask("buy milk")
+		want, _ := list.AddTask("buy bread") // represents task to be marked as completed
+
+		want.Complete()
+
+		if len(list.FindCompleted()) != 1 {
+			t.Fatal("should have one completed tasks")
+		}
+
+		got := list.FindCompleted()[0]
+		if got != want {
+			t.Errorf("got %+v, want %+v", got, want)
+		}
+	})
 }

@@ -72,3 +72,15 @@ func (t *TaskList) DeleteTask(id int) error {
 
 	return nil
 }
+
+func (t *TaskList) FindCompleted() []*Task {
+	completed := make([]*Task, 0)
+
+	for _, task := range t.Tasks {
+		if task.Completed {
+			completed = append(completed, task)
+		}
+	}
+
+	return completed
+}
