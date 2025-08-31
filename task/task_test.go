@@ -53,9 +53,9 @@ func TestListOfTasks(t *testing.T) {
 
 	t.Run("delete a task from list", func(t *testing.T) {
 		list := TaskList{}
-		taskId := list.AddTask("buy milk")
+		task := list.AddTask("buy milk")
 
-		err := list.DeleteTask(taskId)
+		err := list.DeleteTask(task.ID)
 
 		if err != nil {
 			t.Fatal("should not error.")
@@ -67,9 +67,9 @@ func TestListOfTasks(t *testing.T) {
 
 	t.Run("task to delete not found", func(t *testing.T) {
 		list := TaskList{}
-		taskId := list.AddTask("buy milk")
+		task := list.AddTask("buy milk")
 
-		err := list.DeleteTask(taskId + 1)
+		err := list.DeleteTask(task.ID + 1)
 
 		if err == nil {
 			t.Fatal("should error but didn't.")
@@ -78,6 +78,18 @@ func TestListOfTasks(t *testing.T) {
 		if !strings.Contains(err.Error(), "not found") {
 			t.Errorf("unexpected error type: %v", err)
 		}
+	})
 
+	t.Run("tasks ordered by creation", func(t *testing.T) {
+		list := TaskList{}
+		task1 := list.AddTask("buy milk")
+		task2 := list.AddTask("buy bread")
+
+		list.DeleteTask(task2.ID)
+		task3 := list.AddTask("buy cheese")
+
+		if !task1.CreatedAt.Before(task3.CreatedAt) {
+			t.Error("task 1 should be created before task 3")
+		}
 	})
 }

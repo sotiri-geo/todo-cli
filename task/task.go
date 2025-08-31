@@ -25,11 +25,11 @@ func NewTask(description string, id int, createdAt time.Time) *Task {
 	return &Task{ID: id, Description: description, Completed: false, CreatedAt: createdAt}
 }
 
-func (t *TaskList) AddTask(description string) int {
+func (t *TaskList) AddTask(description string) *Task {
 	newId := len(t.Tasks) + 1
 	task := NewTask(description, newId, time.Now())
 	t.Tasks = append(t.Tasks, *task)
-	return newId
+	return task
 }
 
 func (t *TaskList) DeleteTask(id int) error {
