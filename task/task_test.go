@@ -31,7 +31,7 @@ func TestTask(t *testing.T) {
 	})
 }
 
-func TestAddToListOfTasks(t *testing.T) {
+func TestListOfTasks(t *testing.T) {
 	t.Run("auto increments ID", func(t *testing.T) {
 		// User should only configure the min amount they need to i.e. just description
 		// all other stateful variables should be handled by business logic: ID, CreatedAt, Completed (when adding a task)
@@ -48,5 +48,31 @@ func TestAddToListOfTasks(t *testing.T) {
 		if list.Tasks[1].ID != 2 {
 			t.Errorf("got ID: %d, want ID: %d from task %q", list.Tasks[1].ID, 2, list.Tasks[1].Description)
 		}
+	})
+
+	t.Run("delete a task from list", func(t *testing.T) {
+		list := TaskList{}
+		taskId := list.AddTask("buy milk")
+
+		err := list.DeleteTask(taskId)
+
+		if err != nil {
+			t.Fatal("should not error.")
+		}
+		if len(list.Tasks) != 0 {
+			t.Error("did not delete task")
+		}
+	})
+
+	t.Run("task to delete not found", func(t *testing.T) {
+		list := TaskList{}
+		taskId := list.AddTask("buy milk")
+
+		err := list.DeleteTask(taskId + 1)
+
+		if err == nil {
+			t.Fatal("should error but didn't")
+		}
+
 	})
 }
