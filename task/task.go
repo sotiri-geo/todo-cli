@@ -3,6 +3,7 @@ package task
 import (
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 )
 
@@ -28,7 +29,7 @@ func (t *Task) MarkDone() {
 
 // Have constructors alway return pointers to the structs they create
 func NewTask(description string, id int, createdAt time.Time) (*Task, error) {
-	if len(description) == 0 {
+	if strings.TrimSpace(description) == "" {
 		return &Task{}, ErrEmptyTaskDescription
 	}
 	return &Task{ID: id, Description: description, Completed: false, CreatedAt: createdAt}, nil
