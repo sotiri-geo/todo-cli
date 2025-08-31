@@ -5,8 +5,8 @@ import (
 	"time"
 )
 
-func TestNewTask(t *testing.T) {
-	t.Run("Creates a new task", func(t *testing.T) {
+func TestTask(t *testing.T) {
+	t.Run("creates a new task", func(t *testing.T) {
 		task := NewTask("buy milk", 1, time.Date(2025, 8, 31, 12, 0, 0, 0, time.UTC))
 		wantDescription := "buy milk"
 
@@ -16,6 +16,17 @@ func TestNewTask(t *testing.T) {
 
 		if task.Completed {
 			t.Error("New task should not be completed")
+		}
+	})
+
+	t.Run("mark task as done", func(t *testing.T) {
+
+		task := NewTask("buy milk", 1, time.Date(2025, 8, 31, 12, 0, 0, 0, time.UTC))
+
+		task.MarkDone()
+
+		if !task.Completed {
+			t.Error("task failed to be marked as completed.")
 		}
 	})
 }

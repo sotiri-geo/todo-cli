@@ -13,6 +13,10 @@ type TaskList struct {
 	Tasks []Task
 }
 
+func (t *Task) MarkDone() {
+	t.Completed = true
+}
+
 // Have constructors alway return pointers to the structs they create
 func NewTask(description string, id int, createdAt time.Time) *Task {
 	return &Task{ID: id, Description: description, Completed: false, CreatedAt: createdAt}
