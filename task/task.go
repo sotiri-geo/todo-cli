@@ -18,7 +18,8 @@ type Task struct {
 }
 
 type TaskList struct {
-	Tasks []Task
+	Tasks  []Task
+	taskId int
 }
 
 func (t *Task) MarkDone() {
@@ -34,8 +35,8 @@ func NewTask(description string, id int, createdAt time.Time) (*Task, error) {
 }
 
 func (t *TaskList) AddTask(description string) (*Task, error) {
-	newId := len(t.Tasks) + 1
-	task, err := NewTask(description, newId, time.Now())
+	t.taskId++
+	task, err := NewTask(description, t.taskId, time.Now())
 	if err != nil {
 		return &Task{}, fmt.Errorf("Failed to add task: %w", err)
 	}

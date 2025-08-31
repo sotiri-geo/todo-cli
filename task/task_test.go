@@ -118,4 +118,19 @@ func TestListOfTasks(t *testing.T) {
 			t.Error("task 1 should be created before task 3")
 		}
 	})
+
+	t.Run("unique ID creation for each task", func(t *testing.T) {
+		list := TaskList{}
+		task1, _ := list.AddTask("buy milk")
+		task2, _ := list.AddTask("buy bread")
+
+		list.DeleteTask(task1.ID)
+
+		// Create new ID should have id different from task2
+		task3, _ := list.AddTask("buy cheese")
+
+		if task2.ID == task3.ID {
+			t.Errorf("previous task Id %d, new task Id %d ", task2.ID, task3.ID)
+		}
+	})
 }
