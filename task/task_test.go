@@ -1,6 +1,7 @@
 package task
 
 import (
+	"strings"
 	"testing"
 	"time"
 )
@@ -71,7 +72,11 @@ func TestListOfTasks(t *testing.T) {
 		err := list.DeleteTask(taskId + 1)
 
 		if err == nil {
-			t.Fatal("should error but didn't")
+			t.Fatal("should error but didn't.")
+		}
+
+		if !strings.Contains(err.Error(), "not found") {
+			t.Errorf("unexpected error type: %v", err)
 		}
 
 	})
