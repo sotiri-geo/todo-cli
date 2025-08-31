@@ -80,3 +80,46 @@ func TestSaveLoadTasks(t *testing.T) {
 		}
 	})
 }
+
+func TestStorage_EdgeCases(t *testing.T) {
+	cases := []struct {
+		name     string
+		setup    func(*task.TaskList)
+		validate func(*testing.T, *task.TaskList)
+	}{
+		{
+			name: "empty task list",
+			setup: func(tl *task.TaskList) {
+				// Don't add any tasks
+			},
+			validate: func(t *testing.T, loaded *task.TaskList) {
+				if len(loaded.Tasks) != 0 {
+					t.Errorf("got %d, want %d", len(loaded.Tasks), 0)
+				}
+			},
+		},
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			store := NewFakeStore("test.json")
+			taskList := task.NewTaskList()
+
+			tt.setup(taskList) // Setup taskList structure
+
+			err := store.Save(taskList)
+
+			if err != nil {
+				t.Fatalf("Failed save: %v", err)
+			}
+
+			loadedTaskList, err := store.Load()
+
+			if err != nil {
+				t.Fatalf("Failed load: %v", err)
+			}
+
+			tt.validate(t, loadedTaskList)
+		})
+	}
+}
