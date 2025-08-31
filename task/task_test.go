@@ -33,7 +33,7 @@ func TestTask(t *testing.T) {
 		if err != nil {
 			t.Fatal("should not fail")
 		}
-		task.MarkDone()
+		task.Complete()
 
 		if !task.Completed {
 			t.Error("task failed to be marked as completed.")
@@ -138,7 +138,7 @@ func TestListOfTasks(t *testing.T) {
 		list := NewTaskList()
 		task, _ := list.AddTask("buy milk")
 
-		task.MarkDone()
+		task.Complete()
 
 		// Get the task from list
 		taskInList := list.Tasks[0]

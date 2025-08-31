@@ -23,7 +23,7 @@ type TaskList struct {
 	nextId int
 }
 
-func (t *Task) MarkDone() {
+func (t *Task) Complete() {
 	t.Completed = true
 }
 
