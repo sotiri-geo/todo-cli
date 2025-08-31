@@ -35,31 +35,39 @@ func NewFakeStore(filename string) *FakeStore {
 
 func TestSaveLoadTasks(t *testing.T) {
 
-	t.Run("save then load task", func(t *testing.T) {
+	t.Run("save then load preserves task data", func(t *testing.T) {
 		store := NewFakeStore("dummy.json")
 		list := task.NewTaskList()
-		list.AddTask("buy milk")
+		originalTask, _ := list.AddTask("buy milk")
 
-		// persist task list
-		store.Save(list)
+		err := store.Save(list)
 
+		if err != nil {
+			t.Fatalf("Save failed: %v", err)
+		}
 		if store.SaveCalls != 1 {
 			t.Error("did not make any saved calls")
 		}
 
 		taskList, err := store.Load()
 
+		if err != nil {
+			t.Fatalf("Load failed: %v", err)
+		}
+
 		if store.LoadCalls != 1 {
 			t.Error("Load was not called")
 		}
 
-		if err != nil {
-			t.Fatal("should not error")
+		// Test the actual data
+		if len(taskList.Tasks) != 1 {
+			t.Errorf("Number of Tasks: got %d, wanted %d", len(taskList.Tasks), 1)
 		}
 
-		if len(taskList.Tasks) == 0 {
-			t.Error("did not load any tasks")
+		if originalTask.ID != taskList.Tasks[0].ID {
+			t.Errorf("ID: got %d, want %d", taskList.Tasks[0].ID, originalTask.ID)
 		}
+
 	})
 
 	t.Run("cannot save nil value for taskList", func(t *testing.T) {
