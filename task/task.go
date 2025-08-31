@@ -1,8 +1,13 @@
 package task
 
 import (
+	"errors"
 	"fmt"
 	"time"
+)
+
+var (
+	ErrEmptyTaskDescription = errors.New("description must not be empty")
 )
 
 type Task struct {
@@ -21,15 +26,21 @@ func (t *Task) MarkDone() {
 }
 
 // Have constructors alway return pointers to the structs they create
-func NewTask(description string, id int, createdAt time.Time) *Task {
-	return &Task{ID: id, Description: description, Completed: false, CreatedAt: createdAt}
+func NewTask(description string, id int, createdAt time.Time) (*Task, error) {
+	if len(description) == 0 {
+		return &Task{}, ErrEmptyTaskDescription
+	}
+	return &Task{ID: id, Description: description, Completed: false, CreatedAt: createdAt}, nil
 }
 
-func (t *TaskList) AddTask(description string) *Task {
+func (t *TaskList) AddTask(description string) (*Task, error) {
 	newId := len(t.Tasks) + 1
-	task := NewTask(description, newId, time.Now())
+	task, err := NewTask(description, newId, time.Now())
+	if err != nil {
+		return &Task{}, fmt.Errorf("Failed to add task: %w", err)
+	}
 	t.Tasks = append(t.Tasks, *task)
-	return task
+	return task, nil
 }
 
 func (t *TaskList) DeleteTask(id int) error {
