@@ -109,9 +109,11 @@ func TestListOfTasks(t *testing.T) {
 	t.Run("tasks ordered by creation", func(t *testing.T) {
 		list := NewTaskList()
 		task1, _ := list.AddTask("buy milk")
+		time.Sleep(time.Millisecond) // ensure diff timestamps
 		task2, _ := list.AddTask("buy bread")
 
 		list.DeleteTask(task2.ID)
+		time.Sleep(time.Millisecond)
 		task3, _ := list.AddTask("buy cheese")
 
 		if !task1.CreatedAt.Before(task3.CreatedAt) {
