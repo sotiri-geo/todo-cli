@@ -5,30 +5,20 @@ import (
 	"time"
 )
 
+// Start with the domain model, smallest unit of value
+// "I can create a new task, it starts incomplete and has a description"
+
 func TestNewTask(t *testing.T) {
+	t.Run("Creates a new task", func(t *testing.T) {
+		task := NewTask("buy milk", 1, time.Date(2025, 8, 31, 12, 0, 0, 0, time.UTC))
+		wantDescription := "buy milk"
 
-	t.Run("first task", func(t *testing.T) {
-		description := "Buy milk"
-		createdAt := time.Now()
-		got := NewTask(description, false, createdAt)
+		if task.Description != wantDescription {
+			t.Errorf("Description: got %q, want %q", task.Description, wantDescription)
+		}
 
-		want := Task{ID: 0, Description: description, Completed: false, CreatedAt: createdAt}
-
-		if got != want {
-			t.Errorf("got %+v, want %+v", got, want)
+		if task.Completed {
+			t.Error("New task should not be completed")
 		}
 	})
-
-	// t.Run("second task task", func(t *testing.T) {
-	// 	description := "Buy bread"
-	// 	createdAt := time.Now()
-	// 	got := NewTask(description, false, createdAt)
-
-	// 	// ID should autoincrement
-	// 	want := Task{ID: 1, Description: description, Completed: false, CreatedAt: createdAt}
-
-	// 	if got != want {
-	// 		t.Errorf("got %+v, want %+v", got, want)
-	// 	}
-	// })
 }

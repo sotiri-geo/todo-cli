@@ -3,16 +3,13 @@ package task
 import "time"
 
 type Task struct {
-	ID          int       `json:"id"`
-	Description string    `json:"description"`
-	Completed   bool      `json:"completed"`
-	CreatedAt   time.Time `json:"created_at"`
+	ID          int
+	Description string
+	Completed   bool
+	CreatedAt   time.Time
 }
 
-type TaskList struct {
-	Tasks []Task `json:"tasks"`
-}
-
-func NewTask(description string, completed bool, createdAt time.Time) Task {
-	return Task{ID: 0, Description: description, Completed: false, CreatedAt: createdAt}
+// Have constructors alway return pointers to the structs they create
+func NewTask(description string, id int, createdAt time.Time) *Task {
+	return &Task{ID: id, Description: description, Completed: false, CreatedAt: createdAt}
 }
