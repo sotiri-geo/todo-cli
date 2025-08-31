@@ -58,7 +58,7 @@ func TestListOfTasks(t *testing.T) {
 	t.Run("auto increments ID", func(t *testing.T) {
 		// User should only configure the min amount they need to i.e. just description
 		// all other stateful variables should be handled by business logic: ID, CreatedAt, Completed (when adding a task)
-		list := TaskList{}
+		list := NewTaskList()
 		_, err1 := list.AddTask("buy milk")
 		_, err2 := list.AddTask("buy bread")
 
@@ -92,7 +92,7 @@ func TestListOfTasks(t *testing.T) {
 	})
 
 	t.Run("task to delete not found", func(t *testing.T) {
-		list := TaskList{}
+		list := NewTaskList()
 		task, _ := list.AddTask("buy milk")
 
 		err := list.DeleteTask(task.ID + 1)
@@ -107,7 +107,7 @@ func TestListOfTasks(t *testing.T) {
 	})
 
 	t.Run("tasks ordered by creation", func(t *testing.T) {
-		list := TaskList{}
+		list := NewTaskList()
 		task1, _ := list.AddTask("buy milk")
 		task2, _ := list.AddTask("buy bread")
 
@@ -120,7 +120,7 @@ func TestListOfTasks(t *testing.T) {
 	})
 
 	t.Run("unique ID creation for each task", func(t *testing.T) {
-		list := TaskList{}
+		list := NewTaskList()
 		task1, _ := list.AddTask("buy milk")
 		task2, _ := list.AddTask("buy bread")
 
@@ -135,7 +135,7 @@ func TestListOfTasks(t *testing.T) {
 	})
 
 	t.Run("mark task as done after adding to list", func(t *testing.T) {
-		list := TaskList{}
+		list := NewTaskList()
 		task, _ := list.AddTask("buy milk")
 
 		task.MarkDone()

@@ -20,7 +20,7 @@ type Task struct {
 
 type TaskList struct {
 	Tasks  []*Task // Safer to store pointers when we need to mutate state
-	taskId int
+	nextId int
 }
 
 func (t *Task) MarkDone() {
@@ -35,9 +35,16 @@ func NewTask(description string, id int, createdAt time.Time) (*Task, error) {
 	return &Task{ID: id, Description: description, Completed: false, CreatedAt: createdAt}, nil
 }
 
+func NewTaskList() *TaskList {
+	return &TaskList{
+		Tasks:  make([]*Task, 0),
+		nextId: 0,
+	}
+}
+
 func (t *TaskList) AddTask(description string) (*Task, error) {
-	t.taskId++
-	task, err := NewTask(description, t.taskId, time.Now())
+	t.nextId++
+	task, err := NewTask(description, t.nextId, time.Now())
 	if err != nil {
 		return &Task{}, fmt.Errorf("Failed to add task: %w", err)
 	}
