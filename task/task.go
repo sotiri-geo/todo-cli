@@ -18,7 +18,7 @@ type Task struct {
 }
 
 type TaskList struct {
-	Tasks  []Task
+	Tasks  []*Task // Safer to store pointers when we need to mutate state
 	taskId int
 }
 
@@ -40,7 +40,7 @@ func (t *TaskList) AddTask(description string) (*Task, error) {
 	if err != nil {
 		return &Task{}, fmt.Errorf("Failed to add task: %w", err)
 	}
-	t.Tasks = append(t.Tasks, *task)
+	t.Tasks = append(t.Tasks, task) // storing values makes a copy
 	return task, nil
 }
 

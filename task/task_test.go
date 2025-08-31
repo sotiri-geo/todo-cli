@@ -133,4 +133,18 @@ func TestListOfTasks(t *testing.T) {
 			t.Errorf("previous task Id %d, new task Id %d ", task2.ID, task3.ID)
 		}
 	})
+
+	t.Run("mark task as done after adding to list", func(t *testing.T) {
+		list := TaskList{}
+		task, _ := list.AddTask("buy milk")
+
+		task.MarkDone()
+
+		// Get the task from list
+		taskInList := list.Tasks[0]
+
+		if !taskInList.Completed {
+			t.Error("task was not marked as complete`")
+		}
+	})
 }
