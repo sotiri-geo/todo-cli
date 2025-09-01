@@ -180,6 +180,27 @@ func TestService_Integration(t *testing.T) {
 		if len(loaded.Tasks) != 3 {
 			t.Errorf("Failed to persist tasks: got %d, want %d", len(loaded.Tasks), 3)
 		}
+
+		if store.SaveCallCount != 3 {
+			t.Errorf("Failed to call save to store the required number of times: got %d, want %d", store.SaveCallCount, 3)
+		}
+	})
+
+	t.Run("multiple state operations", func(t *testing.T) {
+
+		store := &SpyStore{}
+		svc := NewTaskService(store)
+
+		task, _ := svc.AddTask("Buy milk")
+		svc.AddTask("Buy bread")
+		svc.AddTask("Buy cheese")
+
+		svc.DeleteTask(task.ID) // Remove first task
+		loaded, _ := svc.ListTasks()
+
+		if len(loaded.Tasks) != 2 {
+			t.Errorf("Failed to persist tasks: got %d, want %d", len(loaded.Tasks), 3)
+		}
 	})
 }
 
