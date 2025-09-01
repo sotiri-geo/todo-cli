@@ -6,6 +6,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const filename = "task.json"
+
 var rootCmd = &cobra.Command{
 	Use:   "todo",
 	Short: "A simple CLI tool to manage tasks.",
