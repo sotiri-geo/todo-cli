@@ -26,7 +26,7 @@ var listCmd = &cobra.Command{
 				return err
 			}
 			fmt.Println("✅ Showing only completed tasks...")
-			formatList(*completedList, formatCompleted)
+			formatList(*completedList, formatTaskRow)
 		} else if pending {
 			pendingList, err := svc.ListPendingTasks()
 			if err != nil {
