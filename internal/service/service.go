@@ -65,3 +65,17 @@ func (t *TaskService) GetTask(id int) (*task.Task, error) {
 
 	return task, errGet
 }
+
+func (t *TaskService) DeleteTask(id int) error {
+	loadedTaskList, errLoad := t.store.Load()
+
+	if errLoad != nil {
+		return fmt.Errorf("Failed to delete task: %w", errLoad)
+	}
+
+	errDelete := loadedTaskList.DeleteTask(id)
+
+	// persist back to store
+	t.store.Save(loadedTaskList)
+	return errDelete
+}

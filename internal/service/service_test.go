@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/sotiri-geo/todo-cli/internal/task"
@@ -133,35 +134,35 @@ func TestService(t *testing.T) {
 
 	})
 
-	// t.Run("delete task", func(t *testing.T) {
-	// 	list := task.NewTaskList()
-	// 	task1, _ := list.AddTask("Buy milk")
-	// 	list.AddTask("Buy bread")
+	t.Run("delete task", func(t *testing.T) {
+		list := task.NewTaskList()
+		task1, _ := list.AddTask("Buy milk")
+		list.AddTask("Buy bread")
 
-	// 	store := &SpyStore{taskList: *list}
-	// 	svc := NewTaskService(store)
+		store := &SpyStore{taskList: *list}
+		svc := NewTaskService(store)
 
-	// 	err := scv.DeleteTask(task1.ID)
+		err := svc.DeleteTask(task1.ID)
 
-	// 	if err != nil {
-	// 		t.Fatal("should not error")
-	// 	}
+		if err != nil {
+			t.Fatal("should not error")
+		}
 
-	// 	loaded, err := svc.ListTasks()
-	// 	if err != nil {
-	// 		t.Fatal("should not error")
-	// 	}
-	// 	if len(loaded.Tasks) != 1 {
-	// 		t.Fatalf("Number of tasks: got %d, want %d", len(loaded.Tasks), 1)
-	// 	}
+		loaded, err := svc.ListTasks()
+		if err != nil {
+			t.Fatal("should not error")
+		}
+		if len(loaded.Tasks) != 1 {
+			t.Fatalf("Number of tasks: got %d, want %d", len(loaded.Tasks), 1)
+		}
 
-	// 	// Make sure ID is no longer available
-	// 	err := svc.GetTask(task1.ID)
+		// Make sure ID is no longer available
+		_, errGet := svc.GetTask(task1.ID)
 
-	// 	if errors.Is(err, task.ErrNotFoundTask) {
-	// 		t.Errorf("got %v, want %v", err, task.ErrNotFoundTask)
-	// 	}
-	// })
+		if !errors.Is(errGet, task.ErrNotFoundTask) {
+			t.Errorf("got %q, want %q", errGet, task.ErrNotFoundTask)
+		}
+	})
 }
 
 func assertEqualTaskLists(t testing.TB, got, want task.TaskList) {
