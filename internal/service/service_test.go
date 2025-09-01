@@ -29,7 +29,7 @@ func TestService(t *testing.T) {
 	t.Run("add task", func(t *testing.T) {
 		description := "Buy milk"
 		store := &SpyStore{}
-		svc := TaskService{store}
+		svc := NewTaskService(store)
 		got, err := svc.AddTask(description)
 		wantTaskList := task.NewTaskList()
 		wantTask, _ := wantTaskList.AddTask(description)
@@ -50,7 +50,7 @@ func TestService(t *testing.T) {
 		list := task.NewTaskList()
 		list.AddTask("Buy milk")
 		store := &SpyStore{taskList: *list}
-		svc := TaskService{store}
+		svc := NewTaskService(store)
 
 		loaded, err := svc.ListTasks()
 
@@ -73,7 +73,7 @@ func TestService(t *testing.T) {
 
 		task1.Complete()
 		store := &SpyStore{taskList: *list}
-		svc := TaskService{store}
+		svc := NewTaskService(store)
 
 		loaded, err := svc.ListCompletedTasks()
 
@@ -99,7 +99,7 @@ func TestService(t *testing.T) {
 		list.AddTask("Buy bread")
 
 		store := &SpyStore{taskList: *list}
-		svc := TaskService{store}
+		svc := NewTaskService(store)
 
 		completedTask, err := svc.MarkCompleted(task1.ID)
 

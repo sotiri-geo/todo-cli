@@ -11,6 +11,10 @@ type TaskService struct {
 	store storage.Store
 }
 
+func NewTaskService(store storage.Store) *TaskService {
+	return &TaskService{store: store}
+}
+
 func (t *TaskService) AddTask(description string) (*task.Task, error) {
 	taskList := task.NewTaskList()
 	task, err := taskList.AddTask(description)
