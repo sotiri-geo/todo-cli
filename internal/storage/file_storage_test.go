@@ -64,6 +64,43 @@ func TestFileStorage_Integration(t *testing.T) {
 			t.Errorf("Should have %d completed tasks", 1)
 		}
 	})
+
+	t.Run("save, load, delete", func(t *testing.T) {
+
+		filename := filepath.Join(tempDir, "tasks.json")
+		store := NewFileStore(filename)
+
+		// Create test data
+		originalList := task.NewTaskList()
+		task1, _ := originalList.AddTask("Buy milk")
+		originalList.AddTask("Buy bread")
+
+		// Save to file
+		err := store.Save(originalList)
+
+		if err != nil {
+			t.Fatalf("Failed to save: %v", err)
+		}
+		// Verify file was persisted
+		if _, err := os.Stat(filename); errors.Is(err, os.ErrNotExist) {
+			t.Fatalf("File does not exist: %v", err)
+		}
+
+		// Reload and check same content as original
+		loadedList, err := store.Load()
+
+		loadedList.DeleteTask(task1.ID)
+
+		// Check IDs retain uniqueness
+		loadedList.AddTask("Buy cheese")
+
+		err = store.Save(loadedList)
+
+		nextLoadedList, err := store.Load()
+
+		assertUniqueIds(t, nextLoadedList)
+
+	})
 }
 
 func assertTasksEqual(t testing.TB, got, want *task.Task) {
@@ -84,5 +121,19 @@ func assertTasksEqual(t testing.TB, got, want *task.Task) {
 	// handles monotonic clock differences
 	if !got.CreatedAt.Equal(want.CreatedAt) {
 		t.Errorf("CreatedAt mismatch: got %v, want %v", got.CreatedAt, want.CreatedAt)
+	}
+}
+
+func assertUniqueIds(t testing.TB, taskList *task.TaskList) {
+
+	t.Helper()
+	seen := map[int]struct{}{}
+
+	for _, task := range taskList.Tasks {
+		if _, found := seen[task.ID]; !found {
+			seen[task.ID] = struct{}{}
+		} else {
+			t.Fatalf("Found duplicate ID %d from description %q", task.ID, task.Description)
+		}
 	}
 }
