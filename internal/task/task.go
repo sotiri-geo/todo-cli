@@ -94,3 +94,14 @@ func (t *TaskList) GetTask(id int) (*Task, error) {
 	}
 	return &Task{}, ErrNotFoundTask
 }
+
+func (t *TaskList) MarkCompleted(id int) (*Task, error) {
+	task, err := t.GetTask(id)
+
+	if err != nil {
+		return task, err
+	}
+
+	task.Complete()
+	return task, nil
+}

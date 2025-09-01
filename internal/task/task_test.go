@@ -198,6 +198,28 @@ func TestListOfTasks(t *testing.T) {
 	})
 
 	t.Run("mark task as done by id", func(t *testing.T) {
+		list := NewTaskList()
+		task, _ := list.AddTask("Buy milk")
+		list.AddTask("Buy bread")
 
+		taskCompleted, err := list.MarkCompleted(task.ID)
+
+		if err != nil {
+			t.Fatalf("Unable to mark task as completed: Found %v", err)
+		}
+
+		if !taskCompleted.Completed {
+			t.Fatal("Did not mark task as completed")
+		}
+
+		// Check integrity
+		listCompleted := list.FindCompleted()
+		if len(listCompleted) != 1 {
+			t.Fatalf("Should have 1 completed tasks: Found %d", len(listCompleted))
+		}
+
+		if listCompleted[0] != task {
+			t.Errorf("Incorrect task marked as complete: got %v, want %v", listCompleted[0], task)
+		}
 	})
 }
