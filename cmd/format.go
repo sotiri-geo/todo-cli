@@ -23,7 +23,6 @@ func formatTaskRow(task task.Task) {
 }
 
 func formatList(taskList task.TaskList, formatter func(task task.Task)) {
-	fmt.Println("<<< 📝 Current tasks >>>")
 	for _, task := range taskList.Tasks {
 		formatter(*task)
 	}
