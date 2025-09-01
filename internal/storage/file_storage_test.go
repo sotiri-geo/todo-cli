@@ -66,7 +66,7 @@ func TestFileStorage_Integration(t *testing.T) {
 	})
 }
 
-func assertTasksEqual(t *testing.T, got, want *task.Task) {
+func assertTasksEqual(t testing.TB, got, want *task.Task) {
 	t.Helper()
 
 	if got.ID != want.ID {

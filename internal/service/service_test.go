@@ -47,6 +47,19 @@ func TestService(t *testing.T) {
 
 	})
 
+	t.Run("add multiple tasks", func(t *testing.T) {
+		store := &SpyStore{}
+		svc := NewTaskService(store)
+		task1, _ := svc.AddTask("Buy Milk")
+		task2, _ := svc.AddTask("Buy Bread")
+
+		// retains integrity
+
+		if task1.ID == task2.ID {
+			t.Errorf("Duplicate ID in both tasks: %d", task1.ID)
+		}
+	})
+
 	t.Run("list all tasks", func(t *testing.T) {
 		list := task.NewTaskList()
 		list.AddTask("Buy milk")
@@ -171,19 +184,28 @@ func TestService_Integration(t *testing.T) {
 		store := &SpyStore{}
 		svc := NewTaskService(store)
 
-		svc.AddTask("Buy milk")
-		svc.AddTask("Buy bread")
-		svc.AddTask("Buy cheese")
+		task1, _ := svc.AddTask("Buy milk")
+		task2, _ := svc.AddTask("Buy bread")
+
+		want := task.TaskList{Tasks: []*task.Task{task1, task2}}
+		wantCount := len(want.Tasks)
 
 		loaded, _ := svc.ListTasks()
 
-		if len(loaded.Tasks) != 3 {
-			t.Errorf("Failed to persist tasks: got %d, want %d", len(loaded.Tasks), 3)
+		if len(loaded.Tasks) != wantCount {
+			t.Fatalf("Failed to persist tasks: got %d, want %d", len(loaded.Tasks), wantCount)
 		}
 
-		if store.SaveCallCount != 3 {
-			t.Errorf("Failed to call save to store the required number of times: got %d, want %d", store.SaveCallCount, 3)
+		if store.SaveCallCount != wantCount {
+			t.Fatalf("Failed to call save to store the required number of times: got %d, want %d", store.SaveCallCount, wantCount)
 		}
+		// Check integrity
+		if loaded.Tasks[0].ID == loaded.Tasks[1].ID {
+			t.Fatalf("Duplicate ID detected: %d", loaded.Tasks[0].ID)
+		}
+
+		assertEqualTaskLists(t, *loaded, want)
+
 	})
 
 	t.Run("multiple state operations", func(t *testing.T) {
@@ -201,6 +223,14 @@ func TestService_Integration(t *testing.T) {
 		if len(loaded.Tasks) != 2 {
 			t.Errorf("Failed to persist tasks: got %d, want %d", len(loaded.Tasks), 3)
 		}
+
+		// Check integrity
+		svc.AddTask("Buy water")
+
+		loadedAgain, _ := svc.ListTasks()
+
+		assertUniqueIds(t, loadedAgain)
+
 	})
 }
 
@@ -228,7 +258,7 @@ func assertEqualTaskLists(t testing.TB, got, want task.TaskList) {
 	}
 }
 
-func assertTasksEqual(t *testing.T, got, want *task.Task) {
+func assertTasksEqual(t testing.TB, got, want *task.Task) {
 	t.Helper()
 
 	if got.ID != want.ID {
@@ -241,5 +271,19 @@ func assertTasksEqual(t *testing.T, got, want *task.Task) {
 
 	if got.Completed != want.Completed {
 		t.Errorf("Completed mismatch: got %t, want %t", got.Completed, want.Completed)
+	}
+}
+
+func assertUniqueIds(t testing.TB, taskList *task.TaskList) {
+
+	t.Helper()
+	seen := map[int]struct{}{}
+
+	for _, task := range taskList.Tasks {
+		if _, found := seen[task.ID]; !found {
+			seen[task.ID] = struct{}{}
+		} else {
+			t.Fatalf("Found duplicate ID %d from description %q", task.ID, task.Description)
+		}
 	}
 }
