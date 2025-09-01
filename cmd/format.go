@@ -24,22 +24,20 @@ func formatTaskRow(task task.Task) {
 	fmt.Println(output)
 }
 
-func formatList(taskList task.TaskList) {
+func formatList(taskList task.TaskList, formatter func(task task.Task)) {
 	fmt.Println("<<< 📝 Current tasks >>>")
 	for _, task := range taskList.Tasks {
-		formatTaskRow(*task)
-	}
-}
-
-func formatListCompleted(taskList task.TaskList) {
-	for _, task := range taskList.Tasks {
-		if task.Completed {
-			formatTaskRow(*task)
-		}
+		formatter(*task)
 	}
 }
 
 func formatCompleted(task task.Task) {
 	output := fmt.Sprintf("👍 Task %q - Completed", task.Description)
+	fmt.Println(output)
+}
+
+func formatDeleted(id int) {
+	output := fmt.Sprintf("🗑️ Task %d - Deleted", id)
+
 	fmt.Println(output)
 }

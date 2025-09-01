@@ -18,13 +18,13 @@ var listCmd = &cobra.Command{
 			if err != nil {
 				return err
 			}
-			formatList(*completedList)
+			formatList(*completedList, formatCompleted)
 		} else {
 			taskList, err := svc.ListTasks()
 			if err != nil {
 				return err
 			}
-			formatList(*taskList)
+			formatList(*taskList, formatTaskRow)
 		}
 		return nil
 	},

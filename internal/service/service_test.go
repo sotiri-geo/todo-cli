@@ -165,6 +165,24 @@ func TestService(t *testing.T) {
 	})
 }
 
+func TestService_Integration(t *testing.T) {
+
+	t.Run("adding multiple tasks persists", func(t *testing.T) {
+		store := &SpyStore{}
+		svc := NewTaskService(store)
+
+		svc.AddTask("Buy milk")
+		svc.AddTask("Buy bread")
+		svc.AddTask("Buy cheese")
+
+		loaded, _ := svc.ListTasks()
+
+		if len(loaded.Tasks) != 3 {
+			t.Errorf("Failed to persist tasks: got %d, want %d", len(loaded.Tasks), 3)
+		}
+	})
+}
+
 func assertEqualTaskLists(t testing.TB, got, want task.TaskList) {
 	t.Helper()
 

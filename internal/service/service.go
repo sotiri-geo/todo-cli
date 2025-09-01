@@ -16,7 +16,13 @@ func NewTaskService(store storage.Store) *TaskService {
 }
 
 func (t *TaskService) AddTask(description string) (*task.Task, error) {
-	taskList := task.NewTaskList()
+	// Load from storage
+	taskList, err := t.store.Load()
+
+	// Gracefully handle NotFound by creating a new taskList
+	if err != nil {
+		taskList = task.NewTaskList()
+	}
 	task, err := taskList.AddTask(description)
 
 	t.store.Save(taskList)
