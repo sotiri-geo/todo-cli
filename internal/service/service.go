@@ -32,3 +32,9 @@ func (t *TaskService) ListCompletedTasks() (*task.TaskList, error) {
 	newTaskList.Tasks = loadedTaskList.FindCompleted()
 	return newTaskList, nil
 }
+
+// func (t *TaskService) MarkCompleted(id int) *task.Task {
+// 	loadedTaskList, err := t.store.Load()
+
+// 	return task
+// }

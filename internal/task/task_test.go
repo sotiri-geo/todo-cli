@@ -146,7 +146,7 @@ func TestListOfTasks(t *testing.T) {
 		taskInList := list.Tasks[0]
 
 		if !taskInList.Completed {
-			t.Error("task was not marked as complete`")
+			t.Error("task was not marked as complete")
 		}
 	})
 
@@ -166,5 +166,38 @@ func TestListOfTasks(t *testing.T) {
 		if got != want {
 			t.Errorf("got %+v, want %+v", got, want)
 		}
+	})
+	t.Run("find task by id", func(t *testing.T) {
+		list := NewTaskList()
+		task, _ := list.AddTask("Buy milk")
+		list.AddTask("Buy bread")
+
+		got, err := list.GetTask(task.ID)
+
+		if err != nil {
+			t.Fatalf("Failed to get task: %v", err)
+		}
+
+		if got != task {
+			t.Errorf("got %v, want %v", got, task)
+		}
+	})
+
+	t.Run("search for unknown id", func(t *testing.T) {
+		list := NewTaskList()
+
+		_, err := list.GetTask(1)
+
+		if err == nil {
+			t.Fatal("should have errored")
+		}
+
+		if !errors.Is(err, ErrNotFoundTask) {
+			t.Errorf("got %v, want %v", err, ErrNotFoundTask)
+		}
+	})
+
+	t.Run("mark task as done by id", func(t *testing.T) {
+
 	})
 }

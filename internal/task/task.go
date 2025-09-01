@@ -9,6 +9,7 @@ import (
 
 var (
 	ErrEmptyTaskDescription = errors.New("description must not be empty")
+	ErrNotFoundTask         = errors.New("Task does not exist in task list")
 )
 
 type Task struct {
@@ -83,4 +84,13 @@ func (t *TaskList) FindCompleted() []*Task {
 	}
 
 	return completed
+}
+
+func (t *TaskList) GetTask(id int) (*Task, error) {
+	for _, task := range t.Tasks {
+		if task.ID == id {
+			return task, nil
+		}
+	}
+	return &Task{}, ErrNotFoundTask
 }

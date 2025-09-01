@@ -93,17 +93,21 @@ func TestService(t *testing.T) {
 
 	})
 
-	// t.Run("mark task as completed", func(t *testing.T) {
-	//     list := task.NewTaskList()
-	// 	task1, _ := list.AddTask("Buy milk")
-	// 	list.AddTask("Buy bread")
+	t.Run("mark task as completed", func(t *testing.T) {
+		list := task.NewTaskList()
+		task1, _ := list.AddTask("Buy milk")
+		list.AddTask("Buy bread")
 
-	// 	store := &SpyStore{taskList: *list}
-	// 	svc := TaskService{store}
+		store := &SpyStore{taskList: *list}
+		svc := TaskService{store}
 
-	// 	completedTask := svc.MarkCompleted(task1.ID)
+		completedTask := svc.MarkCompleted(task1.ID)
 
-	// })
+		if task1 != completedTask {
+			t.Errorf("got %+v, want %+v", completedTask, task1)
+		}
+
+	})
 }
 
 func assertEqualTaskLists(t testing.TB, got, want task.TaskList) {
