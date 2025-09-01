@@ -86,6 +86,17 @@ func (t *TaskList) FindCompleted() []*Task {
 	return completed
 }
 
+func (t *TaskList) FindPending() []*Task {
+	pending := make([]*Task, 0)
+
+	for _, task := range t.Tasks {
+		if !task.Completed {
+			pending = append(pending, task)
+		}
+	}
+	return pending
+}
+
 func (t *TaskList) GetTask(id int) (*Task, error) {
 	for _, task := range t.Tasks {
 		if task.ID == id {

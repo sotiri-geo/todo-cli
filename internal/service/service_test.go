@@ -104,7 +104,31 @@ func TestService(t *testing.T) {
 		if gotMarkedAsCompleted != task1 {
 			t.Errorf("Incorrect task marked as completed: got %+v, want %+v", gotMarkedAsCompleted, task1)
 		}
+	})
 
+	t.Run("list all pending tasks - optional flag", func(t *testing.T) {
+
+		list := task.NewTaskList()
+		task1, _ := list.AddTask("Buy milk")
+		task2, _ := list.AddTask("Buy bread")
+
+		task1.Complete()
+		store := &SpyStore{taskList: *list}
+		svc := NewTaskService(store)
+
+		loaded, err := svc.ListPendingTasks()
+
+		if err != nil {
+			t.Fatalf("Failed to load tasks: %v", err)
+		}
+		pendingTasks := loaded.FindPending()
+		if len(pendingTasks) != 1 {
+			t.Fatal("Failed to mark task as completed")
+		}
+
+		if pendingTasks[0] != task2 {
+			t.Errorf("Task should be pending: got %v, want %v", pendingTasks[0], task2)
+		}
 	})
 
 	t.Run("mark task as completed", func(t *testing.T) {

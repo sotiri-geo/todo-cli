@@ -45,6 +45,20 @@ func (t *TaskService) ListCompletedTasks() (*task.TaskList, error) {
 	return newTaskList, nil
 }
 
+func (t *TaskService) ListPendingTasks() (*task.TaskList, error) {
+	loadedTaskList, err := t.store.Load()
+
+	if err != nil {
+		return nil, err
+	}
+
+	// filter for pending
+	newTaskList := task.NewTaskList()
+	newTaskList.Tasks = loadedTaskList.FindPending()
+	return newTaskList, nil
+
+}
+
 func (t *TaskService) MarkCompleted(id int) (*task.Task, error) {
 	loadedTaskList, errLoad := t.store.Load()
 
