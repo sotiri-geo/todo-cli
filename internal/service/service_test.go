@@ -112,6 +112,56 @@ func TestService(t *testing.T) {
 		}
 
 	})
+
+	t.Run("get task by id", func(t *testing.T) {
+		list := task.NewTaskList()
+		task1, _ := list.AddTask("Buy milk")
+		list.AddTask("Buy bread")
+
+		store := &SpyStore{taskList: *list}
+		svc := NewTaskService(store)
+
+		gotTask, err := svc.GetTask(task1.ID)
+
+		if err != nil {
+			t.Fatal("should not error")
+		}
+
+		if gotTask != task1 {
+			t.Errorf("got %v, want %v", gotTask, task1)
+		}
+
+	})
+
+	// t.Run("delete task", func(t *testing.T) {
+	// 	list := task.NewTaskList()
+	// 	task1, _ := list.AddTask("Buy milk")
+	// 	list.AddTask("Buy bread")
+
+	// 	store := &SpyStore{taskList: *list}
+	// 	svc := NewTaskService(store)
+
+	// 	err := scv.DeleteTask(task1.ID)
+
+	// 	if err != nil {
+	// 		t.Fatal("should not error")
+	// 	}
+
+	// 	loaded, err := svc.ListTasks()
+	// 	if err != nil {
+	// 		t.Fatal("should not error")
+	// 	}
+	// 	if len(loaded.Tasks) != 1 {
+	// 		t.Fatalf("Number of tasks: got %d, want %d", len(loaded.Tasks), 1)
+	// 	}
+
+	// 	// Make sure ID is no longer available
+	// 	err := svc.GetTask(task1.ID)
+
+	// 	if errors.Is(err, task.ErrNotFoundTask) {
+	// 		t.Errorf("got %v, want %v", err, task.ErrNotFoundTask)
+	// 	}
+	// })
 }
 
 func assertEqualTaskLists(t testing.TB, got, want task.TaskList) {

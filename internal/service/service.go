@@ -53,3 +53,15 @@ func (t *TaskService) MarkCompleted(id int) (*task.Task, error) {
 	}
 	return completedTask, nil
 }
+
+func (t *TaskService) GetTask(id int) (*task.Task, error) {
+	loadedTaskList, errLoad := t.store.Load()
+
+	if errLoad != nil {
+		return nil, fmt.Errorf("Failed to get task id %d: Found %w", id, errLoad)
+	}
+
+	task, errGet := loadedTaskList.GetTask(id)
+
+	return task, errGet
+}
