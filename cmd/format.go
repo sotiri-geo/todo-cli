@@ -25,6 +25,7 @@ func formatTaskRow(task task.Task) {
 }
 
 func formatList(taskList task.TaskList) {
+	fmt.Println("<<< 📝 Current tasks >>>")
 	for _, task := range taskList.Tasks {
 		formatTaskRow(*task)
 	}
@@ -36,4 +37,9 @@ func formatListCompleted(taskList task.TaskList) {
 			formatTaskRow(*task)
 		}
 	}
+}
+
+func formatCompleted(task task.Task) {
+	output := fmt.Sprintf("👍 Task %q - Completed", task.Description)
+	fmt.Println(output)
 }
