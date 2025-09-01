@@ -20,3 +20,15 @@ func (t *TaskService) AddTask(description string) (*task.Task, error) {
 func (t *TaskService) ListTasks() (*task.TaskList, error) {
 	return t.store.Load()
 }
+
+func (t *TaskService) ListCompletedTasks() (*task.TaskList, error) {
+	loadedTaskList, err := t.store.Load()
+
+	if err != nil {
+		return loadedTaskList, err
+	}
+	// filter for completed
+	newTaskList := task.NewTaskList()
+	newTaskList.Tasks = loadedTaskList.FindCompleted()
+	return newTaskList, nil
+}

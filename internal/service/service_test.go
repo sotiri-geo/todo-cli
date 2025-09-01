@@ -64,6 +64,46 @@ func TestService(t *testing.T) {
 		assertEqualTaskLists(t, *list, *loaded)
 
 	})
+
+	t.Run("list all completed tasks - optional flag", func(t *testing.T) {
+
+		list := task.NewTaskList()
+		task1, _ := list.AddTask("Buy milk")
+		list.AddTask("Buy bread")
+
+		task1.Complete()
+		store := &SpyStore{taskList: *list}
+		svc := TaskService{store}
+
+		loaded, err := svc.ListCompletedTasks()
+
+		if err != nil {
+			t.Fatalf("Failed to load tasks: %v", err)
+		}
+
+		if len(loaded.Tasks) != 1 {
+			t.Fatal("Failed to mark task as completed")
+		}
+
+		gotMarkedAsCompleted := loaded.Tasks[0]
+
+		if gotMarkedAsCompleted != task1 {
+			t.Errorf("Incorrect task marked as completed: got %+v, want %+v", gotMarkedAsCompleted, task1)
+		}
+
+	})
+
+	// t.Run("mark task as completed", func(t *testing.T) {
+	//     list := task.NewTaskList()
+	// 	task1, _ := list.AddTask("Buy milk")
+	// 	list.AddTask("Buy bread")
+
+	// 	store := &SpyStore{taskList: *list}
+	// 	svc := TaskService{store}
+
+	// 	completedTask := svc.MarkCompleted(task1.ID)
+
+	// })
 }
 
 func assertEqualTaskLists(t testing.TB, got, want task.TaskList) {
