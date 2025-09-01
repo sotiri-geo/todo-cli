@@ -1,6 +1,8 @@
 package task
 
 import (
+	"fmt"
+
 	"github.com/sotiri-geo/todo-cli/internal/storage"
 	"github.com/sotiri-geo/todo-cli/internal/task"
 )
@@ -11,7 +13,10 @@ type TaskService struct {
 
 func (t *TaskService) AddTask(description string) (*task.TaskList, error) {
 	taskList := task.NewTaskList()
-	taskList.AddTask(description)
+	_, err := taskList.AddTask(description)
+	if err != nil {
+		return taskList, fmt.Errorf("Failed to add task: %v", err)
+	}
 	t.store.Save(taskList)
 	return taskList, nil
 }

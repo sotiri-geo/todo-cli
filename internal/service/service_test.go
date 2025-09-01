@@ -30,7 +30,8 @@ func TestService(t *testing.T) {
 		store := &SpyStore{}
 		svc := TaskService{store}
 		got, err := svc.AddTask(description)
-		want := []task.Task{{ID: 1, Description: description, Completed: false}}
+		want := task.NewTaskList()
+		want.AddTask(description)
 
 		if err != nil {
 			t.Fatalf("should not error: found %v", err)
@@ -40,23 +41,30 @@ func TestService(t *testing.T) {
 		}
 
 		// Check integrity
-		if len(got.Tasks) != len(want) {
-			t.Fatalf("Task list mismatch: got %d, want %d", len(got.Tasks), len(want))
-		}
-
-		// Check data
-		for i, gotTask := range got.Tasks {
-			if gotTask.ID != want[i].ID {
-				t.Errorf("ID: got %d, want %d", gotTask.ID, want[i].ID)
-			}
-
-			if gotTask.Description != want[i].Description {
-				t.Errorf("Description: got %q, want %q", gotTask.Description, want[i].Description)
-			}
-
-			if gotTask.Completed != want[i].Completed {
-				t.Errorf("Completed: got %v, want %v", gotTask.Completed, want[i].Completed)
-			}
-		}
+		assertEqualTaskLists(t, *got, *want)
 	})
+}
+
+func assertEqualTaskLists(t testing.TB, got, want task.TaskList) {
+	t.Helper()
+
+	// Check integrity
+	if len(got.Tasks) != len(want.Tasks) {
+		t.Fatalf("Task list mismatch: got %d, want %d", len(got.Tasks), len(want.Tasks))
+	}
+
+	// Check data
+	for i, gotTask := range got.Tasks {
+		if gotTask.ID != want.Tasks[i].ID {
+			t.Errorf("ID: got %d, want %d", gotTask.ID, want.Tasks[i].ID)
+		}
+
+		if gotTask.Description != want.Tasks[i].Description {
+			t.Errorf("Description: got %q, want %q", gotTask.Description, want.Tasks[i].Description)
+		}
+
+		if gotTask.Completed != want.Tasks[i].Completed {
+			t.Errorf("Completed: got %v, want %v", gotTask.Completed, want.Tasks[i].Completed)
+		}
+	}
 }
