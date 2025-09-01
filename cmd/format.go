@@ -6,8 +6,6 @@ import (
 	"github.com/sotiri-geo/todo-cli/internal/task"
 )
 
-// Format outputs
-
 func formatAdd(task task.Task) {
 	output := fmt.Sprintf("✅ Task added: %q, Completed: %v", task.Description, task.Completed)
 	fmt.Println(output)
