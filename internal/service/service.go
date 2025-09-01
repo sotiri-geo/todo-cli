@@ -16,3 +16,7 @@ func (t *TaskService) AddTask(description string) (*task.Task, error) {
 	t.store.Save(taskList)
 	return task, err
 }
+
+func (t *TaskService) ListTasks() (*task.TaskList, error) {
+	return t.store.Load()
+}

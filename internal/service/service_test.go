@@ -21,7 +21,7 @@ func (s *SpyStore) Save(taskList *task.TaskList) error {
 }
 
 func (s *SpyStore) Load() (*task.TaskList, error) {
-
+	s.LoadCallCount++
 	return &s.taskList, nil
 }
 
@@ -46,6 +46,24 @@ func TestService(t *testing.T) {
 
 	})
 
+	t.Run("list all tasks", func(t *testing.T) {
+		list := task.NewTaskList()
+		list.AddTask("Buy milk")
+		store := &SpyStore{taskList: *list}
+		svc := TaskService{store}
+
+		loaded, err := svc.ListTasks()
+
+		if err != nil {
+			t.Fatalf("Failed to load: %v", err)
+		}
+
+		if store.LoadCallCount != 1 {
+			t.Fatal("Did not call load method once")
+		}
+		assertEqualTaskLists(t, *list, *loaded)
+
+	})
 }
 
 func assertEqualTaskLists(t testing.TB, got, want task.TaskList) {
