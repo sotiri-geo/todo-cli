@@ -20,8 +20,8 @@ type Task struct {
 }
 
 type TaskList struct {
-	Tasks  []*Task // Safer to store pointers when we need to mutate state
-	nextId int
+	Tasks  []*Task `json:"tasks"`
+	NextId int     `json:"next_id"`
 }
 
 func (t *Task) Complete() {
@@ -39,13 +39,13 @@ func NewTask(description string, id int, createdAt time.Time) (*Task, error) {
 func NewTaskList() *TaskList {
 	return &TaskList{
 		Tasks:  make([]*Task, 0),
-		nextId: 0,
+		NextId: 0,
 	}
 }
 
 func (t *TaskList) AddTask(description string) (*Task, error) {
-	t.nextId++
-	task, err := NewTask(description, t.nextId, time.Now())
+	t.NextId++
+	task, err := NewTask(description, t.NextId, time.Now())
 	if err != nil {
 		return &Task{}, fmt.Errorf("Failed to add task: %w", err)
 	}

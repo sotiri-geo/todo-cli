@@ -57,6 +57,8 @@ func (t *TaskService) MarkCompleted(id int) (*task.Task, error) {
 	if errMark != nil {
 		return completedTask, fmt.Errorf("Failed to mark task %d id as completed: Found %v", id, errMark)
 	}
+
+	t.store.Save(loadedTaskList)
 	return completedTask, nil
 }
 

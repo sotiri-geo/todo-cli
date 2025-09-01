@@ -73,7 +73,7 @@ func TestFileStorage_Integration(t *testing.T) {
 		// Create test data
 		originalList := task.NewTaskList()
 		task1, _ := originalList.AddTask("Buy milk")
-		originalList.AddTask("Buy bread")
+		task2, _ := originalList.AddTask("Buy bread")
 
 		// Save to file
 		err := store.Save(originalList)
@@ -86,19 +86,27 @@ func TestFileStorage_Integration(t *testing.T) {
 			t.Fatalf("File does not exist: %v", err)
 		}
 
-		// Reload and check same content as original
+		// Reload and operate
 		loadedList, err := store.Load()
 
 		loadedList.DeleteTask(task1.ID)
+		loadedList.MarkCompleted(task2.ID)
 
 		// Check IDs retain uniqueness
 		loadedList.AddTask("Buy cheese")
 
-		err = store.Save(loadedList)
+		store.Save(loadedList)
 
-		nextLoadedList, err := store.Load()
-
+		nextLoadedList, _ := store.Load()
 		assertUniqueIds(t, nextLoadedList)
+
+		taskCompleted, err := nextLoadedList.GetTask(task2.ID)
+
+		if err != nil {
+			t.Fatalf("should not error: Found %v", err)
+		}
+
+		assertTaskCompleted(t, taskCompleted)
 
 	})
 }
@@ -135,5 +143,13 @@ func assertUniqueIds(t testing.TB, taskList *task.TaskList) {
 		} else {
 			t.Fatalf("Found duplicate ID %d from description %q", task.ID, task.Description)
 		}
+	}
+}
+
+func assertTaskCompleted(t testing.TB, task *task.Task) {
+	t.Helper()
+
+	if !task.Completed {
+		t.Errorf("Failed to be marked as completed: Task %+v", *task)
 	}
 }

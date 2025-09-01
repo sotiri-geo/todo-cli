@@ -121,10 +121,19 @@ func TestService(t *testing.T) {
 			t.Fatalf("should not error: Found %v", err)
 		}
 
+		if store.SaveCallCount != 1 {
+			t.Fatalf("Failed to call save: Found count %d", store.SaveCallCount)
+		}
+
 		if task1 != completedTask {
 			t.Errorf("got %+v, want %+v", completedTask, task1)
 		}
 
+		got, _ := list.GetTask(task1.ID)
+
+		if !got.Completed {
+			t.Errorf("task was not marked as completed: got %v", got)
+		}
 	})
 
 	t.Run("get task by id", func(t *testing.T) {
@@ -232,6 +241,7 @@ func TestService_Integration(t *testing.T) {
 		assertUniqueIds(t, loadedAgain)
 
 	})
+
 }
 
 func assertEqualTaskLists(t testing.TB, got, want task.TaskList) {
