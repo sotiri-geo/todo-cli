@@ -8,9 +8,10 @@ import (
 
 // Spystore needs to implement the interface Store
 type SpyStore struct {
-	taskList      task.TaskList
-	SaveCallCount int
-	LoadCallCount int
+	taskList               task.TaskList
+	SaveCallCount          int
+	LoadCallCount          int
+	MarkCompletedCallCount int
 }
 
 func (s *SpyStore) Save(taskList *task.TaskList) error {
@@ -30,8 +31,8 @@ func TestService(t *testing.T) {
 		store := &SpyStore{}
 		svc := TaskService{store}
 		got, err := svc.AddTask(description)
-		want := task.NewTaskList()
-		want.AddTask(description)
+		wantTaskList := task.NewTaskList()
+		wantTask, _ := wantTaskList.AddTask(description)
 
 		if err != nil {
 			t.Fatalf("should not error: found %v", err)
@@ -41,8 +42,10 @@ func TestService(t *testing.T) {
 		}
 
 		// Check integrity
-		assertEqualTaskLists(t, *got, *want)
+		assertTasksEqual(t, got, wantTask)
+
 	})
+
 }
 
 func assertEqualTaskLists(t testing.TB, got, want task.TaskList) {
@@ -66,5 +69,21 @@ func assertEqualTaskLists(t testing.TB, got, want task.TaskList) {
 		if gotTask.Completed != want.Tasks[i].Completed {
 			t.Errorf("Completed: got %v, want %v", gotTask.Completed, want.Tasks[i].Completed)
 		}
+	}
+}
+
+func assertTasksEqual(t *testing.T, got, want *task.Task) {
+	t.Helper()
+
+	if got.ID != want.ID {
+		t.Errorf("ID mismatch: got %d, want %d", got.ID, want.ID)
+	}
+
+	if got.Description != want.Description {
+		t.Errorf("Description mismatch: got %q, want %q", got.Description, want.Description)
+	}
+
+	if got.Completed != want.Completed {
+		t.Errorf("Completed mismatch: got %t, want %t", got.Completed, want.Completed)
 	}
 }
