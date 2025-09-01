@@ -1,6 +1,8 @@
 package task
 
 import (
+	"fmt"
+
 	"github.com/sotiri-geo/todo-cli/internal/storage"
 	"github.com/sotiri-geo/todo-cli/internal/task"
 )
@@ -33,8 +35,17 @@ func (t *TaskService) ListCompletedTasks() (*task.TaskList, error) {
 	return newTaskList, nil
 }
 
-// func (t *TaskService) MarkCompleted(id int) *task.Task {
-// 	loadedTaskList, err := t.store.Load()
+func (t *TaskService) MarkCompleted(id int) (*task.Task, error) {
+	loadedTaskList, errLoad := t.store.Load()
 
-// 	return task
-// }
+	if errLoad != nil {
+		return &task.Task{}, fmt.Errorf("Failed to load task: Found %v", errLoad)
+	}
+
+	completedTask, errMark := loadedTaskList.MarkCompleted(id)
+
+	if errMark != nil {
+		return completedTask, fmt.Errorf("Failed to mark task %d id as completed: Found %v", id, errMark)
+	}
+	return completedTask, nil
+}

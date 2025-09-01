@@ -101,7 +101,11 @@ func TestService(t *testing.T) {
 		store := &SpyStore{taskList: *list}
 		svc := TaskService{store}
 
-		completedTask := svc.MarkCompleted(task1.ID)
+		completedTask, err := svc.MarkCompleted(task1.ID)
+
+		if err != nil {
+			t.Fatalf("should not error: Found %v", err)
+		}
 
 		if task1 != completedTask {
 			t.Errorf("got %+v, want %+v", completedTask, task1)
